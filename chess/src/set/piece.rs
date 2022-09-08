@@ -22,7 +22,7 @@ use crate::set::*;
         pub fn new(color: Color, position: Postition, piece_type: PieceType) -> Piece {
             let representation = match piece_type {
                 PieceType::Pawn   =>" P",
-                PieceType::Bishop =>" K",
+                PieceType::Bishop =>" B",
                 PieceType::Knight =>" N",
                 PieceType::Rook   =>" R",
                 PieceType::Queen  =>" Q",

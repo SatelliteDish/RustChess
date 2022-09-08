@@ -4,7 +4,7 @@ pub mod set {
     pub mod board;
     pub mod piece;
 
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, PartialEq)]
     pub enum Color{
         White,
         Black
