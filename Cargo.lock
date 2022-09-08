@@ -16,6 +16,9 @@ dependencies = [
 [[package]]
 name = "chess"
 version = "0.1.0"
+dependencies = [
+ "colored",
+]
 
 [[package]]
 name = "colored"
