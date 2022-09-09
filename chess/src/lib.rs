@@ -4,20 +4,20 @@ pub mod set {
     pub mod board;
     pub mod piece;
 
-    #[derive(Clone, Debug, PartialEq)]
+    #[derive(Clone, Debug, PartialEq,Copy)]
     pub enum Color{
         White,
         Black
     }
 
-    #[derive(Debug)]
-    pub struct Postition {
+    #[derive(Debug, Clone,Copy,Eq, Hash, PartialEq)]
+    pub struct Position {
         x: i32,
         y: i32,
     }
-    impl Postition {
-        pub fn new(x: i32, y: i32) -> Postition {
-            Postition {
+    impl Position {
+        pub fn new(x: i32, y: i32) -> Position {
+            Position {
                 x,
                 y,
             }
