@@ -3,6 +3,7 @@ use std::io;
 use std::mem;
 
 #[derive(Debug,Clone)]
+//Each square on the board is a cell
 pub struct Cell {
     pub color: Color,
     pub piece: Option<piece::Piece>,
@@ -78,28 +79,27 @@ impl Board {
                             Color::Black
                         }
                     };
-                    if row == 0 || row == BOARD_SIZE - 1 { //First Ranks
+                    if row == 0 || row == BOARD_SIZE - 1 { //If this is the first or last rank
                         Some(piece::Piece::new(color.clone(),transform,{
                             match col {
-                                0|7 => piece::PieceType::Rook,//Rooks
-                                1|6 => piece::PieceType::Knight,//Knights
-                                2|5 => piece::PieceType::Bishop,//Bishops
+                                0|7 => piece::PieceType::Rook,//Places Rooks
+                                1|6 => piece::PieceType::Knight,//Places Knights
+                                2|5 => piece::PieceType::Bishop,//Places Bishops
                                 _ => {
                                     if next == color {
-                                        piece::PieceType::Queen
+                                        piece::PieceType::Queen//Places Queen
                                     }
                                     else {
-                                        piece::PieceType::King
+                                        piece::PieceType::King//Places King
                                     }
                                 }
                             }
                         }))
                     }
-                    
-                    else if row == 1 || row == BOARD_SIZE - 2 { //Pawn Ranks
+                    else if row == 1 || row == BOARD_SIZE - 2 { //If this is one of the pawn ranks
                         Some(piece::Piece::new(color,transform,piece::PieceType::Pawn{has_moved: false}))
                     }
-                    else { //Middle Ranks
+                    else { //If this is one of the middle ranks
                         None
                     }
                 };
@@ -212,6 +212,7 @@ impl Board {
         ans
     }
 
+    //Takes in a piece and updates that pieces internal list of possible moves, sorted x position then y
     pub fn find_valid_moves(&mut self, piece: &mut piece::Piece) {
         piece.possible_moves = self.find_rook_moves(&piece.transform); 
         piece.possible_moves.append(&mut self.find_bishop_moves(&piece.transform));
@@ -220,6 +221,7 @@ impl Board {
         self.display_possible_moves(piece);
     }
 
+    //Finds all valid moves assuming Diagonal movement with no jumping pieces
     pub fn find_bishop_moves (&mut self, transform: &Transform) -> Vec<Transform> {
         let mut x = transform.x;
         let mut y = transform.y;
@@ -293,7 +295,8 @@ impl Board {
         ans
     }
 
-    
+    //Takes in a piece and prints the board with all that piece's possible moves highlighted in red
+    //Does not show possible captures, I'm very aware of this but want to work on input before I deal with this
     pub fn display_possible_moves(&mut self, piece: &piece::Piece) {
         for row in (0..BOARD_SIZE).rev() {
             let mut s = String::new();
@@ -317,7 +320,7 @@ impl Board {
         }
     }
 
-    //WIP
+    //Not functional... obviously
     fn new_test_board() -> Board {
         Board::new()
     }
