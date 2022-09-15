@@ -11,27 +11,16 @@ pub mod set {
     }
 
     #[derive(Debug, Clone,Copy,Eq, Hash, PartialEq)]
-    pub struct Position {
+    pub struct Transform {
         x: i32,
         y: i32,
     }
-    impl Position {
-        pub fn new(x: i32, y: i32) -> Position {
-            Position {
+    impl Transform {
+        pub fn new(x: i32, y: i32) -> Transform {
+            Transform {
                 x,
                 y,
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
     }
 }

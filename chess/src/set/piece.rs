@@ -2,7 +2,7 @@ use colored::Colorize;
 use std::collections::HashMap;
 use crate::set::*;
 
-#[derive(Debug, Clone,Copy)]
+#[derive(Debug, Clone,Copy,PartialEq)]
 pub enum PieceType{
     Pawn{has_moved: bool},
     Knight,
@@ -11,17 +11,16 @@ pub enum PieceType{
     Queen,
     King,
 }
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,PartialEq)]
 pub struct Piece {
     pub color: Color,
-    pub position: Position,
+    pub transform: Transform,
     pub piece_type: PieceType,
     pub representation: String,
-    pub possible_moves: HashMap<&board::Cell,Position>,
-    board: &board::Board,
+    pub possible_moves: Vec<Transform>,
 }
 impl Piece {
-    pub fn new(color: Color, position: Position, piece_type: PieceType, board: &board::Board) -> Piece {
+    pub fn new(color: Color, transform: Transform, piece_type: PieceType) -> Piece {
         let representation = match piece_type {
             PieceType::Pawn{has_moved}   =>" P",
             PieceType::Bishop =>" B",
@@ -36,37 +35,32 @@ impl Piece {
         };
         Piece {
             color,
-            position,
+            transform,
             piece_type,
             representation: representation.to_string(),
-            possible_moves: HashMap::new(),
-            board,
+            possible_moves: Vec::new(),
         }
     }
-    pub fn find_valid_moves(&mut self, position: &Position) -> bool {
-        self.possible_moves = HashMap::new();
-        match self.piece_type {
-            PieceType::Pawn{has_moved} => {
-                let num = {
-                    if self.color == Color::White {
-                        1
-                    }
-                    else {
-                        -1
-                    }
-                };
-                self.possible_moves.insert(Position::new(self.position.x, self.position.y + num));
-                if !self.has_moved {
-                    num *= 2;
-                    self.possible_moves.insert(Position::new(self.position.x, self.position.y + num));
+
+    pub fn sort_possible_moves(&mut self) {
+        for i in 0..self.possible_moves.len() - 1 {
+            for j in 0..self.possible_moves.len() - i - 1 {
+                if (self.possible_moves[j].x > self.possible_moves[j+1].x) 
+                || (self.possible_moves[j].x == self.possible_moves[j+1].x && self.possible_moves[j].y > self.possible_moves[j+1].y) {
+                    self.possible_moves.swap(j,j+1);
                 }
-            },
-            PieceType::Knight => (),
-            PieceType::Bishop => (),
-            PieceType::Rook => (),
-            PieceType::Queen => (),
-            PieceType::King => (),
-        };
-        false
+            }
+        }
+    }
+
+    pub fn is_possible_move(&self, transform: &Transform) -> bool {
+        let mut ans = false;
+        for tran in self.possible_moves.iter() {
+            if tran == transform {
+                ans = true;
+                break;
+            }
+        }
+        ans
     }
 }
