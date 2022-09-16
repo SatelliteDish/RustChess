@@ -37,7 +37,7 @@ fn take_input() -> set::board::Request {
 }
 
 fn parse_input(input: String) -> Result<set::board::Request, io::Error> {
-    let piece_type = set::piece::PieceType::Pawn;
+    let piece_type = set::piece::PieceType::Pawn{has_moved: false};
     for chars in input.chars() {
         match chars {
             'P' => {
