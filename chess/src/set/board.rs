@@ -1,6 +1,4 @@
 use crate::set::*;
-use std::io;
-use std::mem;
 
 #[derive(Debug,Clone)]
 //Each square on the board is a cell
@@ -85,14 +83,8 @@ impl Board {
                                 0|7 => piece::PieceType::Rook,//Places Rooks
                                 1|6 => piece::PieceType::Knight,//Places Knights
                                 2|5 => piece::PieceType::Bishop,//Places Bishops
-                                _ => {
-                                    if next == color {
-                                        piece::PieceType::Queen//Places Queen
-                                    }
-                                    else {
-                                        piece::PieceType::King//Places King
-                                    }
-                                }
+                                3   => piece::PieceType::Queen,//Places Queen
+                                _   => piece::PieceType::King,//Places King
                             }
                         }))
                     }
@@ -124,8 +116,8 @@ impl Board {
 
     //WIP
     //When done it will take a Request and return an Error if the move is invalid
-    pub fn make_move(&mut self, mut request: Request) -> Result<(),String> {
-        let mut piece = self.board[0][0].remove_piece();
+    pub fn make_move(&mut self, request: Request) -> Result<(),String> {
+        let piece = self.board[0][0].remove_piece();
         self.board[1][1].piece = piece;
 
         Ok(())
@@ -145,7 +137,7 @@ impl Board {
     //Can be used to tell if a cell is vacant`
     pub fn get_piece(&mut self, transform: Transform) -> Option<&piece::Piece> {
         match self.get_cell(transform) {
-            Some(T) => T.piece.as_ref(),
+            Some(t) => t.piece.as_ref(),
             None => None
         }
     }
@@ -163,7 +155,7 @@ impl Board {
         let mut pos = 0;
         for cell in self.board[x as usize].iter() {
             match &cell.piece {
-                Some(T) => {
+                Some(_t) => {
                     if pos != y {
                         if pos > y {
                             ans.append(&mut moves);
@@ -171,7 +163,7 @@ impl Board {
                         }
                         moves.clear();
                     }
-                    else {;
+                    else {
                         ans.append(&mut moves);
                         moves.clear();
                     }
@@ -189,7 +181,7 @@ impl Board {
 
         for cell in self.board.iter() {
             match &cell[y as usize].piece {
-                Some(T) => {
+                Some(_t) => {
                     if pos != x {
                         if pos > x {
                             ans.append(&mut moves);
@@ -239,9 +231,9 @@ impl Board {
         let mut ans: Vec<Transform> = Vec::new();
 
         while x != BOARD_SIZE-1 && y != BOARD_SIZE-1 {
-            let currentCell = self.get_cell(Transform::new(x,y)).expect("Cell not found!");
-            match &currentCell.piece {
-                Some(T) => {
+            let current_cell = self.get_cell(Transform::new(x,y)).expect("Cell not found!");
+            match &current_cell.piece {
+                Some(t) => {
                     if x == transform.x {
                         ans.append(&mut moves);
                         moves.clear();
@@ -272,9 +264,9 @@ impl Board {
         }
 
         while x < BOARD_SIZE && y >= 0 {
-            let currentCell = self.get_cell(Transform::new(x,y)).expect("Cell not found!");
-            match &currentCell.piece {
-                Some(T) => {
+            let current_cell = self.get_cell(Transform::new(x,y)).expect("Cell not found!");
+            match &current_cell.piece {
+                Some(t) => {
                     if x == transform.x {
                         ans.append(&mut moves);
                         moves.clear();
@@ -319,20 +311,15 @@ impl Board {
             println!("{}",s);
         }
     }
-
-    //Not functional... obviously
-    fn new_test_board() -> Board {
-        Board::new()
-    }
 }
 
-#[derive(Debug)]
-pub struct Request {
-    piece: piece::Piece,
+#[derive(Debug,Copy,Clone)]
+pub struct Request<'a> {
+    piece: &'a piece::Piece,
     transform: Transform,
 }
-impl Request {
-    pub fn new(piece: piece::Piece, transform: Transform) -> Request {
+impl <'a> Request<'a> {
+    pub fn new(piece: &'a piece::Piece, transform: Transform) -> Request<'a> {
         Request{
             piece,
             transform,
