@@ -39,6 +39,7 @@ pub mod set {
             }
         }
     }
+
 }
 #[cfg(test)]
 mod tests {
@@ -82,17 +83,50 @@ mod tests {
         for row in board.cells.iter() {
             for col in row.iter() {
                 let piece: Option<Piece> = col.get_piece();
-                if (row == 0 || BOARD_SIZE - 1) || (row == 1 || BOARD_SIZE - 2) {
-                    let mut _type: PieceType;
-                    match piece {
-                        Some(t) => _type = t,
-                        None => {
+                let is_pawn_row = row == 1 || BOARD_SIZE - 2 ;
+                let is_back_rank = row == 0 || BOARD_SIZE - 1;
+                if is_pawn_row || is_back_rank {
+                    let mut _type: Option<PieceType> = piece.piece_type();
+                    if _type == Some(t) {
+                        if is_pawn_row && t == !PieceType::Pawn {
                             is_valid = false;
                             break;
                         }
+                        else if !is_back_rank && !is_pawn_row {
+                            is_valid = false;
+                            break;
+                        }
+                        else if is_back_rank {
+
+                            if col == 0 || BOARD_SIZE - 1 {
+                                if t != PieceType::Rook {
+                                    is_valid = false;
+                                    break;
+                                }
+                            }
+                            else if col == 1 || BOARD_SIZE - 2 {
+                                if t != PieceType::Knight {
+                                    is_valid = false;
+                                    break;
+                                }
+                            }
+                            else if col == 2 || BOARD_SIZE -3 {
+                                if t != PieceType::Bishop {
+                                    is_valid = false;
+                                    break;
+                                }
+                            }
+                            else if col == 3 || BOARD_SIZE - 4{
+                                
+                            }
+                        }
+                    }
+                    else {
+                        is_valid = false;
+                        break;
                     }
                 }
             }
         }
-    } 
+    }
 }
