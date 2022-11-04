@@ -12,7 +12,7 @@ pub mod set {
                 let mut color = Color::Black;
                 let mut cell_row = Vec::new();
                 for _col in 0..BOARD_SIZE {
-                    cell_row.push(Cell{color});
+                    cell_row.push(Cell {color,piece: None});
                     color = !color;
                 }
                 cells.push(cell_row);
@@ -23,10 +23,19 @@ pub mod set {
             let board = Board::new();
             board
         }
+        pub fn get_cell(&mut self, transform: Transform) -> &Cell {
+            &self.cells[transform.x][transform.y]
+        }
     }
     #[derive(Debug)]
     pub struct Cell {
         pub color: Color,
+        pub piece: Option<Piece>,
+    }
+    impl Cell {
+        pub fn get_piece(&self) -> &Option<Piece> {
+            &self.piece
+        }
     }
 
     #[derive(PartialEq, Debug, Copy, Clone)]
@@ -43,6 +52,8 @@ pub mod set {
             }
         }
     }
+    #[derive(PartialEq, Debug)]
+    pub struct Piece {}
     pub struct Transform {
         pub x: usize,
         pub y: usize,
@@ -50,10 +61,7 @@ pub mod set {
 
     impl Transform {
         pub fn from(x: usize, y: usize) -> Transform {
-            Transform{
-                x,
-                y
-            }
+            Transform { x, y }
         }
     }
 }
@@ -94,32 +102,35 @@ mod tests {
 
     #[test]
     fn start_position_is_correct() {
-        let board = Board::start();
+        let mut board = Board::start();
         let mut is_valid = true;
         for row in 0..BOARD_SIZE {
             for col in 0..BOARD_SIZE {
-                let transform: Transform = Transform::from(row,col);
-                let cell: Cell = board.get_cell(transform);
-                let piece: Option<Piece> = cell.get_piece();
+                let transform: Transform = Transform::from(row, col);
+                let cell: &Cell = board.get_cell(transform);
+                let piece: &Option<Piece> = cell.get_piece();
                 let is_back_rank: bool = {
                     if row == 0 || row == BOARD_SIZE - 1 {
                         true
-                    }
-                    else {
+                    } else {
                         false
                     }
                 };
                 let is_pawn_rank = {
                     if row == 1 || row == BOARD_SIZE - 2 {
                         true
-                    }
-                    else {
+                    } else {
                         false
                     }
                 };
-                if (is_back_rank || is_pawn_rank) && piece == None {
-                    is_valid = false;
-                    break;
+                if is_back_rank || is_pawn_rank {
+                    match piece {
+                        Some(_t) => (),
+                        None => {
+                            is_valid = false;
+                            break;
+                        }
+                    }
                 }
             }
         }
